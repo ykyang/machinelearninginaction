@@ -89,6 +89,9 @@ def dating_class_test():
     test_count = int(row_count * hold_out_ratio)
     error_count = 0.0
 
+    # What the hell is wrong with Python
+    # because I used a variable named "range" in __main__
+    # now it overtakes the "range" builtin function
     for i in builtins.range(test_count):
         classifier_result = classify0(norm_mat[i,:],
                                       norm_mat[test_count:row_count,:],
@@ -101,6 +104,30 @@ def dating_class_test():
 
     print("The total error rate is: %f" % (error_count/float(test_count)))
     print("Error count: %d" % (error_count))
+
+
+def classify_person():
+    result_list = ['not at all', 'in small doses', 'in large doses']
+    percent_time_video = float(input(
+        'percentage of time spent playing video games? ')
+    )
+    frequent_miles = float(input(
+        'frequent flier miles earned per year? '
+    ))
+    ice_cream = float(input(
+        'liters of ice cream consumed per year? '
+    ))
+
+    dating_data_mat, dating_label = file2matrix('datingTestSet2.txt')
+    norm_mat, range, min_val = auto_norm(dating_data_mat)
+    input_array = np.array([frequent_miles, percent_time_video, ice_cream])
+
+    classifier_result = classify0(
+        (input_array - min_val)/range, norm_mat, dating_label, 3
+    )
+
+    print("You will probably like this person: %s"
+          % (result_list[classifier_result - 1]))
 
 
 def get_label(i):
@@ -142,4 +169,6 @@ if __name__ == "__main__":
     # print(norm_mat.shape)
     # print(min_val)
 
-    dating_class_test()
+    #dating_class_test()
+
+    classify_person()
