@@ -1,6 +1,7 @@
 import numpy as np
 import operator as op
 import builtins
+import os
 
 def create_dataset():
     group = np.array([[1.0, 1.1], [1.0, 1.0], [0, 0], [0, 0.1]])
@@ -128,6 +129,50 @@ def classify_person():
 
     print("You will probably like this person: %s"
           % (result_list[classifier_result - 1]))
+
+
+def image2vector(filename: str) -> np.ndarray:
+    vec = np.zeros((1,1024))
+    fr = open(filename)
+    for i in range(32):
+        line = fr.readline()
+        for j in range(32):
+            ind: int = i*32 + j
+            vec[0, ind] = int(line[j])
+
+    return vec
+
+
+def handwriting_class_test():
+    hw_labels = []
+    training_file_list = os.listdir('trainingDigits')
+    file_count = len(training_file_list)
+    row_count: int = file_count
+    training_mat = np.zeros((row_count, 1024))
+    # Load all the training images (0-9) into matrix
+    for i in range(file_count):
+        filename = training_file_list[i]
+        basename = filename.split('.')[0] # 2_43.txt --> 2_43
+        class_num = int(basename.split('_')[0])
+        hw_labels.append(class_num)
+        training_mat[i,:] = image2vector('trainingDigits/%s' % filename)
+
+    test_file_list = os.listdir('testDigits')
+    error_count: int = 0
+    test_count: int = len(test_file_list)
+
+    for i in range(test_count):
+        filename: str = test_file_list[i]
+        basename: str = filename.split('.')[0]
+        class_num = int(basename.split('_')[0])
+        vector_under_test = image2vector('testDigits/%s' % filename)
+        classifier_result = classify0(vector_under_test, training_mat, hw_labels, 3)
+        print("The classifer: %d, the answer is: %d" % (classifier_result, class_num))
+        if classifier_result != class_num:
+            error_count += 1.0
+    print('Error count: %d' % error_count)
+    print('Test count: %d' % test_count)
+    print('Error rate: %f' % (float(error_count)/float(test_count)))
 
 
 def get_label(i):
