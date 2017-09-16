@@ -48,3 +48,16 @@ def cal_shannon_entropy(data_set):
     return entropy
 
 
+def split_data_set(data_set, axis, value):
+    return_data_set = []
+    for row in data_set:
+        if row[axis] == value:
+            # remove the axis used for splitting
+            reduced_row = row[:axis]
+            reduced_row.extend(row[axis+1:])
+            return_data_set.append(reduced_row)
+
+    return return_data_set
+
+
+#def choose_best_feature
